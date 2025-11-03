@@ -14,13 +14,13 @@
               Discover cutting-edge research, innovative solutions, and academic excellence from Ghana's premier liberal arts institution. Join us in shaping the future through knowledge and discovery.
             </p>
             <div class="mt-8 flex flex-col gap-4 sm:flex-row">
-              <a href="#/topics" class="inline-flex items-center justify-center gap-2 rounded-md bg-ink px-6 py-3 text-sm font-medium text-paper hover:bg-ink/90 transition-colors">
+              <a href="#/topics" class="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-white hover:bg-blue-oxford-800 transition-colors">
                 Explore Research
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3"/>
                 </svg>
               </a>
-              <a href="#/about" class="inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 px-6 py-3 text-sm font-medium text-ink hover:bg-slate-50 transition-colors">
+              <a href="#/about" class="inline-flex items-center justify-center gap-2 rounded-md border border-secondary bg-secondary px-6 py-3 text-sm font-medium text-primary hover:bg-vista-blue-300 transition-colors">
                 Learn More
               </a>
             </div>

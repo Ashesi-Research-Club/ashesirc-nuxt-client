@@ -55,10 +55,16 @@ npm run lint         # Code linting
 
 Uses TailwindCSS utility classes. Custom styles in `src/assets/main.css`.
 
-Key color scheme:
-- `text-ink` - Primary text
-- `bg-paper` - Background
-- `text-accent` - Highlights
+**Brand Colors:**
+- **Vista Blue** (`#92ACFF`) - Secondary buttons, accents, highlights
+- **Blue Oxford** (`#0E0929`) - Primary backgrounds, main text
+
+**Key Classes:**
+- `bg-primary` / `text-primary` - Blue Oxford (#0E0929)
+- `bg-secondary` / `text-secondary` - Vista Blue (#92ACFF)
+- `bg-paper` - Light background (#fafaf7)
+- `text-ink` - Primary text (Blue Oxford)
+- `text-accent` - Highlights (Vista Blue)
 
 ## Adding Content
 

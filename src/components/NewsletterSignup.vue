@@ -7,8 +7,8 @@
       </div>
       <form class="md:col-span-3 flex flex-col gap-3 md:flex-row" @submit.prevent="onSubmit">
         <label class="sr-only" for="email">Email</label>
-        <input id="email" v-model="email" type="email" required placeholder="you@example.com" class="flex-1 rounded border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-accent/20 placeholder:text-slate-400 focus:ring-2" />
-        <button type="submit" class="rounded bg-ink px-4 py-2 text-sm font-medium text-paper hover:bg-ink/90">Subscribe</button>
+        <input id="email" v-model="email" type="email" required placeholder="you@example.com" class="flex-1 rounded border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-secondary/20 placeholder:text-slate-400 focus:ring-2 focus:ring-secondary" />
+        <button type="submit" class="rounded bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-blue-oxford-800 transition-colors">Subscribe</button>
       </form>
     </div>
   </section>

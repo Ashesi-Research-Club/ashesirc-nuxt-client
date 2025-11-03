@@ -2,7 +2,7 @@
   <header class="sticky top-0 z-40 border-b border-slate-200/60 bg-paper/80 backdrop-blur supports-[backdrop-filter]:bg-paper/60">
     <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:py-4">
       <a href="#/" class="flex items-center gap-3">
-        <div class="h-8 w-8 rounded-sm bg-accent/90 text-paper grid place-items-center font-serif text-lg font-semibold">RN</div>
+        <div class="h-8 w-8 rounded-sm bg-primary text-white grid place-items-center font-serif text-lg font-semibold">AR</div>
         <span class="sr-only">Ashesi Research Magazine</span>
         <span class="text-[1.4rem] font-serif tracking-tight text-ink">Ashesi Research Magazine</span>
       </a>
@@ -37,7 +37,13 @@ const open = ref(false)
 </script>
 
 <style scoped>
-.nav-link { @apply text-ink/80 hover:text-ink transition-colors; }
-.btn-ghost { @apply rounded border border-slate-300/70 px-3 py-1.5 text-ink/80 hover:bg-slate-100/60; }
-.mobile-link { @apply py-2 text-ink/80 hover:text-ink; }
+.nav-link { 
+  @apply text-ink/80 hover:text-ink transition-colors; 
+}
+.btn-ghost { 
+  @apply rounded border border-secondary bg-secondary px-3 py-1.5 text-primary hover:bg-vista-blue-300 transition-colors; 
+}
+.mobile-link { 
+  @apply py-2 text-ink/80 hover:text-ink; 
+}
 </style>

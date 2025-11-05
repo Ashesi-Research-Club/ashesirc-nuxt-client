@@ -19,7 +19,18 @@ export default defineConfigWithVueTs(
 
   pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
-  
+
+  // Custom rules for Vue components
+  {
+    files: ['**/*.vue'],
+    rules: {
+      // Allow single-word component names for pages and layout components
+      'vue/multi-word-component-names': ['error', {
+        ignores: ['Header', 'Footer', 'Home', 'About', 'Apply', 'Article', 'Archives', 'Topics', 'Join', 'Placeholder']
+      }]
+    }
+  },
+
   {
     ...pluginVitest.configs.recommended,
     files: ['src/**/__tests__/*'],

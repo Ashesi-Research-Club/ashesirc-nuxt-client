@@ -302,9 +302,27 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 
-// Form state
+// Form state interface
+interface ApplicationForm {
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  program: string
+  year: string
+  advisor: string
+  title: string
+  category: string
+  abstract: string
+  impact: string
+  stage: string
+  motivation: string
+  materials: string
+  consent: boolean
+}
+
 const isSubmitting = ref(false)
-const form = reactive({
+const form = reactive<ApplicationForm>({
   firstName: '',
   lastName: '',
   email: '',
@@ -336,13 +354,23 @@ async function onSubmit() {
     // Show success message
     alert('Application submitted successfully! We\'ll review your submission and contact you within 5-7 business days.')
     
-    // Reset form
-    Object.keys(form).forEach(key => {
-      if (typeof form[key] === 'boolean') {
-        form[key] = false
-      } else {
-        form[key] = ''
-      }
+    // Reset form - type-safe way
+    Object.assign(form, {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      program: '',
+      year: '',
+      advisor: '',
+      title: '',
+      category: '',
+      abstract: '',
+      impact: '',
+      stage: '',
+      motivation: '',
+      materials: '',
+      consent: false
     })
     
   } catch (error) {

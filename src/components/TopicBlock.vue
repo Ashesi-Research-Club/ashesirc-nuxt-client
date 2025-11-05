@@ -2,7 +2,7 @@
   <section class="rounded-md border border-slate-200/70 bg-paper p-5">
     <header class="mb-3 flex items-baseline justify-between">
       <h3 class="font-serif text-xl text-ink">{{ title }}</h3>
-      <a :href="viewAll" class="text-xs text-accent hover:underline">View all</a>
+      <a v-if="showViewAll" :href="viewAll" class="text-xs text-accent hover:underline">View all</a>
     </header>
     <div class="space-y-5">
       <ArticleCard
@@ -37,6 +37,7 @@ interface Props {
   title: string
   viewAll: string
   articles: Article[]
+  showViewAll?: boolean
 }
 
 defineProps<Props>()

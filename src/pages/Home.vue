@@ -14,14 +14,14 @@
               Discover cutting-edge research, innovative solutions, and academic excellence from Ghana's premier liberal arts institution. Join us in shaping the future through knowledge and discovery.
             </p>
             <div class="mt-8 flex flex-col gap-4 sm:flex-row">
-              <a href="/topics" class="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-white hover:bg-blue-oxford-800 transition-colors">
-                Explore Research
+              <a href="/apply" class="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-white hover:bg-blue-oxford-800 transition-colors">
+                Get Featured
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3"/>
                 </svg>
               </a>
-              <a href="/apply" class="inline-flex items-center justify-center gap-2 rounded-md border border-secondary bg-secondary px-6 py-3 text-sm font-medium text-primary hover:bg-vista-blue-300 transition-colors">
-                Get Featured
+              <a href="/archives" class="inline-flex items-center justify-center gap-2 rounded-md border border-secondary bg-secondary px-6 py-3 text-sm font-medium text-primary hover:bg-vista-blue-300 transition-colors">
+                Explore Research
               </a>
             </div>
           </div>
@@ -80,6 +80,7 @@
         <TopicBlock
           title="Computer Science & Engineering"
           viewAll="#/topics"
+          :showViewAll="false"
           :articles="[
             { title: 'Machine Learning for Social Impact', description: 'How Ashesi students are applying AI to solve local challenges.', author: 'Kwame A.', date: 'Jan 14, 2025', tag: 'CS', image: null, link: '#/article/ml-social-impact' },
             { title: 'Sustainable Technology Solutions', description: 'Engineering innovations for environmental challenges in Ghana.', author: 'Ama K.', date: 'Jan 10, 2025', tag: 'Engineering', image: null, link: '#/article/sustainable-tech' }
@@ -88,6 +89,7 @@
         <TopicBlock
           title="Business & Entrepreneurship"
           viewAll="#/topics"
+          :showViewAll="false"
           :articles="[
             { title: 'Social Enterprise Research Lab', description: 'Studying business models that create positive social impact.', author: 'Joseph T.', date: 'Jan 12, 2025', tag: 'Business', image: null, link: '#/article/social-enterprise' },
             { title: 'Fintech Innovation in West Africa', description: 'Research on financial technology adoption and impact.', author: 'Fatima O.', date: 'Jan 6, 2025', tag: 'Fintech', image: null, link: '#/article/fintech-innovation' }
@@ -96,6 +98,7 @@
         <TopicBlock
           title="Liberal Arts & Humanities"
           viewAll="#/topics"
+          :showViewAll="false"
           :articles="[
             { title: 'Digital Humanities Projects', description: 'Preserving and analyzing African cultural heritage through technology.', author: 'Nana Y.', date: 'Jan 3, 2025', tag: 'Humanities', image: null, link: '#/article/digital-humanities' },
             { title: 'Language and Identity Research', description: 'Exploring multilingualism and cultural identity in Ghana.', author: 'Kojo M.', date: 'Dec 30, 2024', tag: 'Language', image: null, link: '#/article/language-identity' }
@@ -104,6 +107,7 @@
         <TopicBlock
           title="Student Research Spotlight"
           viewAll="#/topics"
+          :showViewAll="false"
           :articles="[
             { title: 'Undergraduate Research Excellence', description: 'Highlighting outstanding student research projects and achievements.', author: 'Research Office', date: 'Dec 27, 2024', tag: 'Students', image: null, link: '#/article/student-excellence' },
             { title: 'Capstone Project Showcase', description: 'Innovative solutions developed by graduating students.', author: 'Academic Team', date: 'Dec 21, 2024', tag: 'Capstone', image: null, link: '#/article/capstone-showcase' }

@@ -8,6 +8,11 @@ export interface RouteState {
 }
 
 function parsePath(): RouteState {
+  // Handle SSR/build time when window is not available
+  if (typeof window === 'undefined') {
+    return { name: 'home', params: {} }
+  }
+
   const path = window.location.pathname
   const segments = path.split('/').filter(Boolean)
 
@@ -40,12 +45,15 @@ export function useRouter() {
     state.value = parsePath()
   }
 
-  window.addEventListener('popstate', onPopState)
+  // Only add event listener if window is available
+  if (typeof window !== 'undefined') {
+    window.addEventListener('popstate', onPopState)
+  }
 
   const path = computed(() => state.value)
 
   const navigate = (to: string) => {
-    if (to !== window.location.pathname) {
+    if (typeof window !== 'undefined' && to !== window.location.pathname) {
       window.history.pushState({}, '', to)
       state.value = parsePath()
     }

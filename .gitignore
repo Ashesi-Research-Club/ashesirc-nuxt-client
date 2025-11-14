@@ -5,6 +5,9 @@ bootstrapdata.ts
 .env*
 !.env.example
 
+# Generated static data
+src/data/
+
 # Build outputs
 dist/
 dist-ssr/

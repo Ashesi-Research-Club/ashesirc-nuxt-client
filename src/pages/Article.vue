@@ -3,56 +3,150 @@
     <div class="fixed inset-x-0 top-0 z-50 h-1 bg-slate-200/60">
       <div class="h-full bg-accent transition-[width]" :style="{ width: progress + '%' }"></div>
     </div>
-    <article class="mx-auto max-w-3xl px-4 pb-16 pt-10">
+    
+    <!-- Loading State -->
+    <div v-if="loading" class="mx-auto max-w-3xl px-4 pt-20">
+      <div class="animate-pulse">
+        <div class="h-4 bg-slate-200 rounded w-20 mb-4"></div>
+        <div class="h-8 bg-slate-200 rounded w-3/4 mb-2"></div>
+        <div class="h-4 bg-slate-200 rounded w-1/2 mb-8"></div>
+        <div class="h-64 bg-slate-200 rounded mb-8"></div>
+        <div class="space-y-4">
+          <div class="h-4 bg-slate-200 rounded"></div>
+          <div class="h-4 bg-slate-200 rounded w-5/6"></div>
+          <div class="h-4 bg-slate-200 rounded w-4/6"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="mx-auto max-w-3xl px-4 pt-20 text-center">
+      <div class="text-red-600 mb-4">
+        <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 15.5c-.77.833.192 2.5 1.732 2.5z"/>
+        </svg>
+      </div>
+      <h1 class="font-serif text-2xl text-ink mb-4">Article Not Found</h1>
+      <p class="text-ink/70 mb-6">{{ error }}</p>
+      <a href="/" class="text-secondary hover:text-vista-blue-600 font-medium">← Back to Home</a>
+    </div>
+
+    <!-- Article Content -->
+    <article v-else-if="article" class="mx-auto max-w-3xl px-4 pb-16 pt-10">
       <header class="mb-8">
-        <p class="text-xs uppercase tracking-wide text-accent">{{ tag }}</p>
-        <h1 class="mt-2 font-serif text-3xl leading-tight text-ink md:text-4xl">{{ title }}</h1>
-        <p class="mt-2 text-sm text-ink/70">By {{ author }} • {{ date }} • {{ readingTime }}</p>
+        <p class="text-xs uppercase tracking-wide text-accent">{{ getCategoryName(article.category) }}</p>
+        <h1 class="mt-2 font-serif text-3xl leading-tight text-ink md:text-4xl">{{ article.title }}</h1>
+        <p class="mt-2 text-sm text-ink/70">
+          By {{ formatAuthor(article) }} • {{ formatDate(article.publishedDate) }} • {{ article.readTime }} min read
+        </p>
       </header>
 
-      <figure class="my-6 overflow-hidden rounded bg-slate-100">
-        <img :src="image" :alt="title" class="w-full object-cover" />
-        <figcaption class="px-3 py-2 text-center text-xs text-ink/60">{{ caption }}</figcaption>
+      <figure v-if="article.featuredImage" class="my-6 overflow-hidden rounded bg-slate-100">
+        <img :src="article.featuredImage.url" :alt="article.title" class="w-full object-cover" />
+        <figcaption v-if="article.featuredImage.caption" class="px-3 py-2 text-center text-xs text-ink/60">
+          {{ article.featuredImage.caption }}
+        </figcaption>
       </figure>
 
       <div class="prose max-w-none">
-        <p class="lead">Across the continent, students are building labs that punch above their weight. This piece explores funding, mentorship, and infrastructure that make it possible.</p>
+        <p v-if="article.excerpt" class="lead">{{ article.excerpt }}</p>
+        
+        <div v-html="parsedContent"></div>
+      </div>
+      
+      <!-- Article Tags -->
+      <div v-if="article.tags && article.tags.length" class="mt-8 pt-8 border-t border-slate-200">
+        <h3 class="text-sm font-medium text-ink/70 mb-3">Tags</h3>
+        <div class="flex flex-wrap gap-2">
+          <span 
+            v-for="tag in article.tags" 
+            :key="tag.id"
+            class="inline-block px-3 py-1 text-xs rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+          >
+            {{ tag.name }}
+          </span>
+        </div>
+      </div>
 
-        <blockquote class="pull-quote">“Young researchers are not the future—they are the present.”</blockquote>
-
-        <p>
-          Collaborative grants and open-source tools are lowering barriers to entry. Universities that empower undergraduate labs see benefits in publications, community impact, and graduate outcomes.
-        </p>
-
-        <h2>What changes the game</h2>
-        <ul>
-          <li>Access to mentors with time and incentives to teach</li>
-          <li>Seed funding for small, iterative projects</li>
-          <li>Spaces that support collaboration and safety</li>
-        </ul>
-
-        <p>
-          Case studies from Accra, Nairobi, and Cape Town show that when students lead, universities follow—creating a virtuous cycle of curiosity and delivery.
-        </p>
-
-        <p class="end">Thanks for reading. Share your lab stories with us for a chance to be featured.</p>
+      <!-- Related Articles -->
+      <div v-if="relatedArticles.length" class="mt-12 pt-8 border-t border-slate-200">
+        <h3 class="font-serif text-xl text-ink mb-6">Related Articles</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <article 
+            v-for="relatedArticle in relatedArticles" 
+            :key="relatedArticle.id"
+            class="border border-slate-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+          >
+            <div class="h-32 bg-gradient-to-br from-slate-100 to-slate-200"></div>
+            <div class="p-4">
+              <h4 class="font-serif text-lg text-ink mb-2 line-clamp-2">
+                <a :href="`/article/${relatedArticle.slug}`" class="hover:text-primary transition-colors">
+                  {{ relatedArticle.title }}
+                </a>
+              </h4>
+              <p class="text-sm text-ink/70 line-clamp-2">{{ relatedArticle.excerpt }}</p>
+            </div>
+          </article>
+        </div>
       </div>
     </article>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
+import { useApi } from '@/composables/useApi'
+import { useMarkdown } from '@/composables/useMarkdown'
+import type { Article } from '@/composables/useApi'
 
-const title = 'Rethinking University Research in Africa: Funding, Collaboration, and Impact'
-const tag = 'Feature'
-const author = 'Ama K.'
-const date = 'Jan 17, 2025'
-const image = 'https://images.unsplash.com/photo-1523246191914-9fdb7d0b42d4?q=80&w=1600&auto=format&fit=crop'
-const caption = 'Student researchers collaborating in a campus lab.'
-const readingTime = '8 min read'
+const { getArticleBySlug, getArticles, loading, error } = useApi()
+const { parseMarkdown } = useMarkdown()
 
+const article = ref<Article | null>(null)
+const relatedArticles = ref<Article[]>([])
 const progress = ref(0)
+
+// Get article slug from URL path
+const articleSlug = computed(() => {
+  const path = window.location.pathname
+  const segments = path.split('/')
+  return segments[segments.length - 1] // Get the last segment as slug
+})
+
+// Parse markdown content to HTML
+const parsedContent = computed(() => {
+  return article.value?.content ? parseMarkdown(article.value.content) : ''
+})
+
+onMounted(async () => {
+  try {
+    // Fetch the article
+    if (articleSlug.value) {
+      article.value = await getArticleBySlug(articleSlug.value)
+      
+      // Fetch related articles from the same category
+      if (article.value) {
+        const related = await getArticles({ 
+          category: article.value.category, 
+          limit: 4 
+        })
+        
+        // Filter out current article from related articles
+        relatedArticles.value = related.filter(a => a.id !== article.value!.id)
+      }
+    }
+  } catch (err) {
+    console.error('Error fetching article:', err)
+  }
+
+  // Setup scroll progress
+  updateProgress()
+  window.addEventListener('scroll', updateProgress, { passive: true })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', updateProgress)
+})
 
 function updateProgress() {
   const el = document.documentElement
@@ -61,24 +155,173 @@ function updateProgress() {
   progress.value = height ? Math.min(100, Math.round((scrollTop / height) * 100)) : 0
 }
 
-onMounted(() => {
-  updateProgress()
-  window.addEventListener('scroll', updateProgress, { passive: true })
-})
+// Helper functions
+const getCategoryName = (category: string): string => {
+  const categoryMap: Record<string, string> = {
+    'computer-science': 'Computer Science',
+    'engineering': 'Engineering',
+    'business': 'Business', 
+    'humanities': 'Humanities',
+    'interdisciplinary': 'Interdisciplinary'
+  }
+  return categoryMap[category] || category
+}
 
-onUnmounted(() => {
-  window.removeEventListener('scroll', updateProgress)
-})
+const formatAuthor = (article: Article): string => {
+  if (!article.author) return 'Unknown Author'
+  return `${article.author.firstName} ${article.author.lastName}`
+}
+
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  })
+}
 </script>
 
 <style scoped>
-.prose :where(p) { @apply my-4 text-[17px] leading-7 text-ink/90; }
-.prose :where(.lead) { @apply text-lg leading-8 text-ink; }
-.prose :where(h2) { @apply mt-8 mb-3 font-serif text-2xl text-ink; }
-.prose :where(ul) { @apply my-4 list-disc pl-6 text-ink/90; }
-.prose :where(blockquote.pull-quote) {
-  @apply my-6 border-l-4 border-accent/60 bg-slate-50/80 p-4 font-serif text-xl italic text-ink;
+/* Enhanced prose styling for markdown content */
+.prose p { 
+  margin: 1rem 0; 
+  font-size: 17px; 
+  line-height: 1.75; 
+  color: var(--ink-color, #0E0929);
+  opacity: 0.9;
 }
-.prose :where(figure) { @apply my-6; }
-.prose :where(p.end) { @apply mt-8 text-ink; }
+
+.prose .lead { 
+  font-size: 1.125rem; 
+  line-height: 2; 
+  color: var(--ink-color, #0E0929); 
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 { 
+  margin-top: 2rem; 
+  margin-bottom: 0.75rem; 
+  font-family: serif; 
+  color: var(--ink-color, #0E0929); 
+  font-weight: 600;
+}
+
+.prose h1 { font-size: 2rem; }
+.prose h2 { font-size: 1.75rem; }
+.prose h3 { font-size: 1.5rem; }
+.prose h4 { font-size: 1.25rem; }
+.prose h5 { font-size: 1.125rem; }
+.prose h6 { font-size: 1rem; }
+
+.prose ul, .prose ol { 
+  margin: 1rem 0; 
+  padding-left: 1.5rem; 
+  color: var(--ink-color, #0E0929);
+  opacity: 0.9;
+}
+
+.prose ul { 
+  list-style-type: disc; 
+}
+
+.prose ol { 
+  list-style-type: decimal; 
+}
+
+.prose li {
+  margin: 0.5rem 0;
+}
+
+.prose blockquote {
+  margin: 1.5rem 0;
+  border-left: 4px solid rgba(146, 172, 255, 0.6);
+  background-color: rgba(248, 250, 252, 0.8);
+  padding: 1rem 1.5rem;
+  font-style: italic;
+  color: var(--ink-color, #0E0929);
+}
+
+.prose blockquote p {
+  margin: 0.5rem 0;
+}
+
+.prose code {
+  background-color: rgba(230, 230, 230, 0.3);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: #d73a49;
+}
+
+.prose pre {
+  background-color: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.prose pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+.prose a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.prose a:hover {
+  color: #0052a3;
+  text-decoration: underline;
+}
+
+.prose strong {
+  font-weight: 600;
+  color: var(--ink-color, #0E0929);
+}
+
+.prose em {
+  font-style: italic;
+}
+
+.prose hr {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 1px solid #e1e4e8;
+}
+
+.prose table {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: collapse;
+  border: 1px solid #e1e4e8;
+}
+
+.prose th,
+.prose td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.prose th {
+  background-color: #f6f8fa;
+  font-weight: 600;
+}
+
+.prose figure { 
+  margin: 1.5rem 0; 
+}
+
+.prose .end { 
+  margin-top: 2rem; 
+  color: var(--ink-color, #0E0929); 
+}
 </style>

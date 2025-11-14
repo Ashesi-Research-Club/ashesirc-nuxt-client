@@ -72,7 +72,22 @@
     <!-- Results Summary -->
     <section class="py-8">
       <div class="mx-auto max-w-6xl px-4">
-        <div class="flex items-center justify-between">
+        <div v-if="loading" class="text-center">
+          <div class="inline-flex items-center gap-2 text-ink/70">
+            <svg class="animate-spin h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"/>
+              <path fill="currentColor" opacity="0.75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+            </svg>
+            Loading articles...
+          </div>
+        </div>
+        
+        <div v-else-if="error" class="text-center">
+          <div class="text-red-600 mb-2">Error loading articles</div>
+          <p class="text-sm text-ink/70">{{ error }}</p>
+        </div>
+        
+        <div v-else class="flex items-center justify-between">
           <p class="text-ink/70">
             <span class="font-medium">{{ filteredArticles.length }}</span> 
             article{{ filteredArticles.length !== 1 ? 's' : '' }} found
@@ -95,7 +110,7 @@
     <!-- Articles by Year -->
     <section class="pb-16">
       <div class="mx-auto max-w-6xl px-4">
-        <div v-if="filteredArticles.length === 0" class="text-center py-16">
+        <div v-if="!loading && !error && filteredArticles.length === 0" class="text-center py-16">
           <div class="text-slate-400 mb-4">
             <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -106,7 +121,7 @@
         </div>
 
         <!-- Grouped by Year -->
-        <div v-else class="space-y-12">
+        <div v-else-if="!loading && !error" class="space-y-12">
           <div v-for="(articles, year) in groupedArticles" :key="year" class="space-y-6">
             <!-- Year Header -->
             <div class="border-b border-slate-200 pb-4">
@@ -137,7 +152,7 @@
                 <!-- Article Content -->
                 <div class="p-6">
                   <div class="mb-3">
-                    <time class="text-xs text-ink/50">{{ formatDate(article.date) }}</time>
+                    <time class="text-xs text-ink/50">{{ formatDate(article.publishedDate) }}</time>
                   </div>
                   
                   <h3 class="font-serif text-lg text-ink mb-2 group-hover:text-primary transition-colors">
@@ -145,12 +160,12 @@
                   </h3>
                   
                   <p class="text-sm text-ink/70 leading-relaxed mb-4 line-clamp-3">
-                    {{ article.excerpt }}
+                    {{ stripMarkdown(article.excerpt) }}
                   </p>
                   
                   <div class="flex items-center justify-between">
                     <div class="text-sm text-ink/60">
-                      by <span class="font-medium">{{ article.author }}</span>
+                      by <span class="font-medium">{{ formatAuthor(article) }}</span>
                     </div>
                     <a 
                       :href="`/article/${article.slug}`"
@@ -170,99 +185,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useApi } from '@/composables/useApi'
+import { useMarkdown } from '@/composables/useMarkdown'
+import type { Article } from '@/composables/useApi'
 
-// Types
-interface Article {
-  id: string
-  title: string
-  excerpt: string
-  author: string
-  date: string
-  category: string
-  slug: string
-}
+const { getArticles, loading, error } = useApi()
+const { stripMarkdown } = useMarkdown()
 
-// Sample data - replace with actual API call
-const articles = ref<Article[]>([
-  {
-    id: '1',
-    title: 'Machine Learning Applications in Healthcare: A Comprehensive Study',
-    excerpt: 'Exploring how artificial intelligence and machine learning algorithms are revolutionizing healthcare delivery in Ghana and across West Africa.',
-    author: 'Emmanuel Darko',
-    date: '2024-10-15',
-    category: 'computer-science',
-    slug: 'ml-healthcare-study'
-  },
-  {
-    id: '2',
-    title: 'Sustainable Engineering Solutions for Rural Communities',
-    excerpt: 'Investigating innovative engineering approaches to address infrastructure challenges in rural Ghanaian communities.',
-    author: 'Kwame Asante',
-    date: '2024-09-22',
-    category: 'engineering',
-    slug: 'sustainable-engineering-rural'
-  },
-  {
-    id: '3',
-    title: 'Digital Financial Inclusion in West Africa',
-    excerpt: 'Analyzing the impact of mobile money and digital payment systems on financial inclusion across the region.',
-    author: 'Ama Osei',
-    date: '2024-08-18',
-    category: 'business',
-    slug: 'digital-financial-inclusion'
-  },
-  {
-    id: '4',
-    title: 'The Role of Liberal Arts in African Development',
-    excerpt: 'Examining how liberal arts education contributes to holistic development and critical thinking in Africa.',
-    author: 'Grace Amoah',
-    date: '2024-07-12',
-    category: 'humanities',
-    slug: 'liberal-arts-african-development'
-  },
-  {
-    id: '5',
-    title: 'Climate Change Adaptation Strategies for Coastal Ghana',
-    excerpt: 'Research on community-based adaptation strategies for climate change impacts on Ghana\'s coastal regions.',
-    author: 'Abdul Rahman',
-    date: '2024-06-08',
-    category: 'interdisciplinary',
-    slug: 'climate-adaptation-coastal-ghana'
-  },
-  {
-    id: '6',
-    title: 'Entrepreneurship Ecosystem in Accra: Challenges and Opportunities',
-    excerpt: 'A comprehensive analysis of the startup ecosystem in Accra and recommendations for sustainable growth.',
-    author: 'Akosua Mensah',
-    date: '2023-12-15',
-    category: 'business',
-    slug: 'accra-entrepreneurship-ecosystem'
-  },
-  {
-    id: '7',
-    title: 'Traditional Governance Systems and Modern Democracy in Ghana',
-    excerpt: 'Exploring the intersection between traditional chieftaincy and contemporary democratic governance.',
-    author: 'Emmanuel Darko',
-    date: '2023-11-20',
-    category: 'social-sciences',
-    slug: 'traditional-governance-democracy'
-  },
-  {
-    id: '8',
-    title: 'AI Ethics in African Context: A Framework for Responsible Innovation',
-    excerpt: 'Developing ethical guidelines for artificial intelligence development and deployment in African societies.',
-    author: 'Ama Osei',
-    date: '2023-10-05',
-    category: 'computer-science',
-    slug: 'ai-ethics-african-framework'
-  }
-])
+// State
+const articles = ref<Article[]>([])
 
 // Reactive filters
 const searchQuery = ref('')
 const selectedCategory = ref('')
 const sortBy = ref('newest')
+
+// Fetch articles on mount
+onMounted(async () => {
+  try {
+    const fetchedArticles = await getArticles({ populate: true })
+    articles.value = fetchedArticles
+  } catch (err) {
+    console.error('Error fetching articles:', err)
+  }
+})
 
 // Computed properties
 const filteredArticles = computed(() => {
@@ -273,8 +220,8 @@ const filteredArticles = computed(() => {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(article => 
       article.title.toLowerCase().includes(query) ||
-      article.excerpt.toLowerCase().includes(query) ||
-      article.author.toLowerCase().includes(query)
+      stripMarkdown(article.excerpt).toLowerCase().includes(query) ||
+      (article.author?.firstName + ' ' + article.author?.lastName).toLowerCase().includes(query)
     )
   }
 
@@ -287,14 +234,16 @@ const filteredArticles = computed(() => {
   filtered.sort((a, b) => {
     switch (sortBy.value) {
       case 'oldest':
-        return new Date(a.date).getTime() - new Date(b.date).getTime()
+        return new Date(a.publishedDate).getTime() - new Date(b.publishedDate).getTime()
       case 'title':
         return a.title.localeCompare(b.title)
       case 'author':
-        return a.author.localeCompare(b.author)
+        const authorA = a.author ? `${a.author.firstName} ${a.author.lastName}` : 'Unknown'
+        const authorB = b.author ? `${b.author.firstName} ${b.author.lastName}` : 'Unknown'
+        return authorA.localeCompare(authorB)
       case 'newest':
       default:
-        return new Date(b.date).getTime() - new Date(a.date).getTime()
+        return new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime()
     }
   })
 
@@ -305,7 +254,7 @@ const groupedArticles = computed(() => {
   const grouped: Record<string, Article[]> = {}
   
   filteredArticles.value.forEach(article => {
-    const year = new Date(article.date).getFullYear().toString()
+    const year = new Date(article.publishedDate).getFullYear().toString()
     if (!grouped[year]) {
       grouped[year] = []
     }
@@ -319,9 +268,8 @@ const groupedArticles = computed(() => {
 const getCategoryName = (category: string): string => {
   const categoryMap: Record<string, string> = {
     'computer-science': 'Computer Science',
-    'engineering': 'Engineering',
+    'engineering': 'Engineering', 
     'business': 'Business',
-    'social-sciences': 'Social Sciences',
     'humanities': 'Humanities',
     'interdisciplinary': 'Interdisciplinary'
   }
@@ -333,7 +281,6 @@ const getCategoryColor = (category: string): string => {
     'computer-science': 'bg-blue-100 text-blue-800',
     'engineering': 'bg-green-100 text-green-800',
     'business': 'bg-purple-100 text-purple-800',
-    'social-sciences': 'bg-orange-100 text-orange-800',
     'humanities': 'bg-pink-100 text-pink-800',
     'interdisciplinary': 'bg-secondary text-primary'
   }
@@ -347,6 +294,11 @@ const formatDate = (dateString: string): string => {
     month: 'long', 
     day: 'numeric' 
   })
+}
+
+const formatAuthor = (article: Article): string => {
+  if (!article.author) return 'Unknown Author'
+  return `${article.author.firstName} ${article.author.lastName}`
 }
 
 const clearFilters = () => {

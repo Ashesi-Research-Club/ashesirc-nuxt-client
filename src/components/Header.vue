@@ -9,7 +9,6 @@
       <nav class="hidden items-center gap-6 text-sm md:flex">
         <a class="nav-link" href="/">Home</a>
         <a class="nav-link" href="/apply">Apply</a>
-        <a class="nav-link" href="/archives">Archives</a>
         <a class="nav-link" href="/about">About</a>
         <a class="btn-ghost" href="/join">Subscribe</a>
       </nav>
@@ -23,7 +22,6 @@
             <nav class="mt-6 space-y-4">
         <a class="nav-link-mobile" href="/">Home</a>
         <a class="nav-link-mobile" href="/apply">Apply</a>
-        <a class="nav-link-mobile" href="/archives">Archives</a>
         <a class="nav-link-mobile" href="/about">About</a>
         <a class="btn-ghost inline-block" href="/join">Subscribe</a>
       </nav>

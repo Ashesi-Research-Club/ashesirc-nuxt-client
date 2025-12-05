@@ -292,6 +292,35 @@ export const useApi = () => {
         error.value = null
 
         try {
+            // If a SheetDB newsletter URL is configured, use it
+            if (appConfig.sheetdbNewsletterUrl) {
+                const payload = {
+                    data: [
+                        {
+                            id: 'INCREMENT',
+                            email,
+                        },
+                    ],
+                }
+
+                const res = await fetch(appConfig.sheetdbNewsletterUrl, {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                })
+
+                if (!res.ok) {
+                    const txt = await res.text()
+                    throw new Error(`SheetDB Error: ${res.status} ${txt}`)
+                }
+
+                return true
+            }
+
+            // Fallback to existing API route if SheetDB not configured
             await apiRequest('/newsletter-subscribers', {
                 method: 'POST',
                 body: JSON.stringify({
@@ -308,11 +337,49 @@ export const useApi = () => {
     }
 
     // Application submission
-    const submitApplication = async (applicationData: ApplicationForm) => {
+    const submitApplication = async (applicationData: ApplicationForm, sheetRow?: Record<string, any>) => {
         loading.value = true
         error.value = null
 
         try {
+            // If a SheetDB applications URL is configured, use it
+            if (appConfig.sheetdbApplicationUrl) {
+                // Use provided sheetRow when available, otherwise map from applicationData
+                const row: Record<string, any> = sheetRow ?? {
+                    id: 'INCREMENT',
+                    name: (applicationData as any).name || '',
+                    email: (applicationData as any).email || '',
+                    program: (applicationData as any).program || '',
+                    yearOfStudy: (applicationData as any).yearOfStudy || '',
+                    researchTopic: (applicationData as any).researchTopic || '',
+                    researchDescription: (applicationData as any).researchDescription || '',
+                    methodology: (applicationData as any).methodology || '',
+                    collaborationType: (applicationData as any).collaborationType || '',
+                    timeline: (applicationData as any).timeline || '',
+                    impact: (applicationData as any).impact || '',
+                    additionalInfo: (applicationData as any).additionalInfo || '',
+                }
+
+                const payload = { data: [row] }
+
+                const res = await fetch(appConfig.sheetdbApplicationUrl, {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                })
+
+                if (!res.ok) {
+                    const txt = await res.text()
+                    throw new Error(`SheetDB Error: ${res.status} ${txt}`)
+                }
+
+                return true
+            }
+
+            // Fallback to existing API route if SheetDB not configured
             await apiRequest('/applications', {
                 method: 'POST',
                 body: JSON.stringify({

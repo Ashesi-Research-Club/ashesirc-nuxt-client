@@ -21,6 +21,12 @@ export interface AppConfig {
     // Development Configuration
     nodeEnv: string
     enableDevtools: boolean
+
+    // SheetDB / Newsletter endpoint (optional)
+    sheetdbNewsletterUrl: string
+
+    // SheetDB / Applications endpoint (optional)
+    sheetdbApplicationUrl: string
 }
 
 // Helper function to get environment variable with fallback
@@ -56,6 +62,12 @@ export const appConfig: AppConfig = {
     // Development Configuration
     nodeEnv: getEnvVar('VITE_NODE_ENV', 'development'),
     enableDevtools: getEnvVar('VITE_ENABLE_DEVTOOLS', 'true') === 'true',
+
+    // SheetDB Newsletter endpoint (optional - empty string disables network calls)
+    sheetdbNewsletterUrl: getEnvVar('VITE_SHEETDB_NEWSLETTER_URL', ''),
+
+    // SheetDB Applications endpoint (optional - empty string disables network calls)
+    sheetdbApplicationUrl: getEnvVar('VITE_SHEETDB_APPLICATION_URL', ''),
 }
 
 // Utility functions for common configuration checks

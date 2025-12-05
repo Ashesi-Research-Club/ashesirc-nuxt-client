@@ -120,19 +120,89 @@ const parsedContent = computed(() => {
 
 onMounted(async () => {
   try {
-    // Fetch the article
-    if (articleSlug.value) {
-      article.value = await getArticleBySlug(articleSlug.value)
-      
-      // Fetch related articles from the same category
-      if (article.value) {
-        const related = await getArticles({ 
-          category: article.value.category, 
-          limit: 4 
-        })
+    // If the URL matches the hardcoded slug, inject the article locally and skip API calls
+    if (articleSlug.value === 'from-curiosity-to-impact') {
+      article.value = {
+        id: 0,
+        documentId: 'local-from-curiosity',
+        title: 'From Curiosity to Impact',
+        excerpt: 'Curious, determined and ambitious, Elijah Kwaku Adutwum Boateng has made it his mission to utilize computing and intelligent machines to address real-world challenges.',
+        content: `Curious, determined and ambitious, Elijah Kwaku Adutwum Boateng has made it his mission to utilize computing and intelligent machines to address real-world challenges. From early collaborations with researchers at Ashesi University and University of Ghana, the Ashesi Class of 2023 alum has continually drawn on the technical foundation he built at the university to solve day-to-day challenges that demand both theory and practical insight. His capstone project on facial recognition systems marked a turning point in his academic career, demonstrating his ability to turn academic concepts into functional, real-world solutions. Driven by discomfort, curiosity, and a commitment to meaningful innovation, Elijah continues to deepen his knowledge in interactive machine intelligence as an Intelligent Computing masters student at Ashesi University.
+
+Elijah's journey into the world of intelligence computer science (ICS) began after graduating from Ashesi University in 2023 with a degree in computer science. During his University trajectory, he was privileged to work at the University of Ghana and Ashesi University as a research aide, usually being assigned to foundational tasks, including literature reviews and data interpretation. Post his graduation from Ashesi in 2023, he was employed by the university as a faculty intern in the provost's office. He did not neglect his love for the world of machine intelligence, during his employment as a faculty intern, he worked alongside Dr. Govender on research projects.
+According to Elijah, working with the Academic Affairs and Professors, especially, Dr. Govender taught him how to be patient and meticulous when undertaking research projects, and not necessarily rush into conclusions. He also learned that, though capstone projects generally force people into deadlines, it is important to be innovative and circumspect while allowing room to explore. Now, even under time pressure, Elijah ideates quickly and frequently, enabling him to see many results from which he identifies the most efficient approach within a short time.
+During this time, he was exposed to a plethora of topics under machine intelligence, such as how Code can interact with real-world systems and transforming abstract algorithms into solutions that address concrete challenges. That’s where he realized that sitting in front of the computer, just typing “one’s” and ” zero’s”, “input” and “print,” would isolate his work behind screens, hijacking both worldly impact and his ability to engage physically with communities. Thus, he decided to offer ICS as a concatenation of theoretical foundations, research experience, and strong applicative orientation.
+
+Early in his academic journey, Elijah was introduced to the world of research as he worked on research projects with professors from the University of Ghana and Ashesi. He was tasked with the development of literature reviews, data collection and summarisation and with the interpretation of basic statistics. In his final year at Ashesi, he found that the research knowledge he had accumulated from the tertiary institutions had provided him with the prerequisite knowledge to work independently and efficiently on the research for his capstone titled “Facial Recognition Using Multiple Constraints with Application to Attendance Management”.
+
+Taking inspiration from Dr. Lumens’ work on facial recognition, Elijah sought to enhance the existing model which he observed functioned effectively but in isolation across different constraints, thus he aimed to integrate these individual strengths into a single, more efficient model. His research focused on three major components. The first component he improved was detection, he addressed lighting challenges by improving the system’s ability to accurately locate faces under varying lighting conditions. Secondly, he addressed feature extraction by improving the visibility and alignment of key facial landmarks such as the eyes, nose, and mouth, by utilizing Google’s FaceNet which is a pretrained model used to generate robust feature embeddings even when parts of the face are partially obscured. Finally he improved the classification stage in the model through the employment of
+distance-based methods and Support Vector Machines (SVMs) to distinguish between individuals faces with higher precision and accuracy. Although the system did not explicitly account for rapid, real-time changes in lighting and pose, his final model still achieved an accuracy of approximately 95–96%.
+
+Building on his capstone research, Elijah is exploring the intersection of vision and language, working on ‘language-vision models’ which are equipped with vision to both see and understand. While he acknowledged the existence of GPT-based systems that can perform similar tasks, he stated that they are often expensive and inaccessible thus motivating him to develop cheaper, smaller and more efficient models capable of running locally. He seeks to build a model that can make meaningful contributions to healthcare in Ghana, referring to his model as a “low-cost, hospital in your pocket” that can listen, see, and reduce consultation times and provide accurate diagnosis and treatment recommendations.
+
+Reflecting on his journey so far, Elijah emphasized the importance of patience as a virtue in research. He learnt the importance of meticulousness and careful observation, from esteemed professors like Dr. Govender and Dr. Jumens who taught him that thoughtful iteration and attention to detail often lead to more meaningful and effective solutions. Although sometimes challenging to practice, the value of patience and meticulousness have allowed him to iterate frequently, explore multiple outcomes to identify the most efficient approaches.
+
+Aside from patience, Elijah highlighted that his ‘eureka moments’ mainly arose from moments of discomfort and frustration. For instance his capstone facial recognition project was birthed in the middle of the night when his phone could not recognize his face and failed to unlock. Problems like these piqued his curiosity causing him to ponder until solutions began to surface. He emphasizes that anyone can identify problems by observing what doesn’t work, for him, this reflection has become a key source of innovation, with ideas quickly taking shape in his mind.
+
+As a student currently pursuing a master’s degree in ICS, Elijah’s aim now is how to find missing persons efficiently and how delivery systems could automate connections instead of requiring calls. He hopes to achieve this by building upon his face recognition project he worked on as his final year capstone project.
+`,
+        slug: 'from-curiosity-to-impact',
+        category: 'engineering',
+        status: 'published',
+        featured: true,
+        readTime: 5,
+        publishedDate: '2025-12-03',
+        viewCount: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
+        locale: 'en',
+        author: {
+          id: 1,
+          documentId: 'ashesi-research-magazine',
+          firstName: 'Ashesi Research Magazine',
+          lastName: '',
+          email: '',
+          phone: '',
+          program: 'computer-science',
+          yearOfStudy: 'faculty',
+          researchAdvisor: '',
+          bio: '',
+          researchInterests: '',
+          status: 'active',
+          achievements: '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          publishedAt: new Date().toISOString(),
+          locale: 'en'
+        },
+        tags: [],
+        featuredImage: null,
+        seo: null,
+        pdfFile: null,
+        createdBy: null,
+        updatedBy: null,
+        localizations: []
+      } as Article
+
+      // no related articles for the local article
+      relatedArticles.value = []
+
+    } else {
+      // original remote-fetch behavior for other slugs
+      if (articleSlug.value) {
+        article.value = await getArticleBySlug(articleSlug.value)
         
-        // Filter out current article from related articles
-        relatedArticles.value = related.filter(a => a.id !== article.value!.id)
+        // Fetch related articles from the same category
+        if (article.value) {
+          const related = await getArticles({ 
+            category: article.value.category, 
+            limit: 4 
+          })
+          
+          // Filter out current article from related articles
+          relatedArticles.value = related.filter(a => a.id !== article.value!.id)
+        }
       }
     }
   } catch (err) {
@@ -162,7 +232,8 @@ const getCategoryName = (category: string): string => {
     'engineering': 'Engineering',
     'business': 'Business', 
     'humanities': 'Humanities',
-    'interdisciplinary': 'Interdisciplinary'
+    'interdisciplinary': 'Interdisciplinary',
+    'machine-intelligence': 'Machine Intelligence'
   }
   return categoryMap[category] || category
 }
@@ -185,7 +256,7 @@ const formatDate = (dateString: string): string => {
 <style scoped>
 /* Enhanced prose styling for markdown content */
 .prose p { 
-  margin: 1rem 0; 
+  margin: 20px 0; 
   font-size: 17px; 
   line-height: 1.75; 
   color: var(--ink-color, #0E0929);
@@ -323,5 +394,12 @@ const formatDate = (dateString: string): string => {
 .prose .end { 
   margin-top: 2rem; 
   color: var(--ink-color, #0E0929); 
+}
+</style>
+
+<!-- Global styles applied to v-html content (unscoped) -->
+<style>
+.prose p {
+  margin: 20px 0 !important;
 }
 </style>

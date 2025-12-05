@@ -6,8 +6,8 @@
     </div>
     
     <!-- Error Message -->
-    <div v-if="errorMessage || error" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-      <p class="text-red-800 text-sm">{{ errorMessage || error }}</p>
+    <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+      <p class="text-red-800 text-sm">{{ errorMessage }}</p>
     </div>
     
     <div class="grid items-center gap-6 md:grid-cols-5">
@@ -23,7 +23,7 @@
           type="email" 
           required 
           :disabled="loading"
-          :placeholder="`you@${appConfig.universityDomain}`" 
+          :placeholder="`you@${universityDomain}`" 
           class="flex-1 rounded border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-secondary/20 placeholder:text-slate-400 focus:ring-2 focus:ring-secondary disabled:opacity-50 disabled:cursor-not-allowed" 
         />
         <button 
@@ -41,35 +41,76 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useApi } from '@/composables/useApi'
 import { appConfig } from '@/config/app'
-
-const { subscribeNewsletter, loading, error, clearError } = useApi()
 
 const email = ref('')
 const isSuccess = ref(false)
 const errorMessage = ref<string | null>(null)
+const loading = ref(false)
+const universityDomain = appConfig.universityDomain || 'ashesi.edu'
+
+function validateEmail(e: string) {
+  const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i
+  return re.test(e)
+}
 
 async function onSubmit() {
-  // Clear any previous state
-  clearError()
-  isSuccess.value = false
   errorMessage.value = null
+  isSuccess.value = false
+  loading.value = true
 
   try {
-    await subscribeNewsletter(email.value)
+    // Basic validation
+    if (!email.value || !validateEmail(email.value)) {
+      throw new Error('Please enter a valid email address')
+    }
+
+    // If SheetDB endpoint is not configured, fall back to a local simulation
+    const url = appConfig.sheetdbNewsletterUrl || ''
+    if (!url) {
+      // simulate network latency and success
+      await new Promise((r) => setTimeout(r, 800))
+      isSuccess.value = true
+      email.value = ''
+      return
+    }
+
+    const payload = {
+      data: [
+        {
+          id: 'INCREMENT',
+          email: email.value,
+        },
+      ],
+    }
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+
+    if (!res.ok) {
+      const txt = await res.text()
+      throw new Error(`Server returned ${res.status}: ${txt}`)
+    }
+
     isSuccess.value = true
     email.value = ''
-    
+
     // Hide success message after 3 seconds
-    setTimeout(() => {
-      isSuccess.value = false
-    }, 3000)
+    setTimeout(() => { isSuccess.value = false }, 3000)
   } catch (err) {
-    console.error('Newsletter subscription error:', err)
-    errorMessage.value = err instanceof Error ? err.message : 'Failed to subscribe to newsletter'
+    errorMessage.value = err instanceof Error ? err.message : 'Failed to subscribe'
+  } finally {
+    loading.value = false
   }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+input { outline: none; }
+</style>

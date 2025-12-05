@@ -482,9 +482,29 @@ async function onSubmit() {
         form.supportingMaterials && `Supporting Materials: ${form.supportingMaterials}`
       ].filter(Boolean).join('\n\n')
     }
-    
-    // Submit to API
-    await submitApplication(applicationData)
+
+    // Build SheetDB row with explicit column names expected by the spreadsheet
+    const sheetRow: Record<string, any> = {
+      id: 'INCREMENT',
+      first_name: form.firstName,
+      last_name: form.lastName,
+      email: form.email,
+      phone: form.phone,
+      academic_program: form.program,
+      year_of_study: form.yearOfStudy,
+      research_advisor: form.researchAdvisor,
+      research_title: form.researchTitle,
+      research_category: form.researchCategory,
+      project_stage: form.projectStage,
+      research_details: form.abstract,
+      research_abstract: form.abstract,
+      research_motivation: form.motivation,
+      expected_impact: form.impact,
+      supporting_materials: form.supportingMaterials,
+    }
+
+    // Submit to API (and to SheetDB if configured)
+    await submitApplication(applicationData, sheetRow)
     
     // Show success state
     submitSuccess.value = true

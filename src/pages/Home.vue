@@ -20,7 +20,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3"/>
                 </svg>
               </a>
-              <a href="/archives" class="inline-flex items-center justify-center gap-2 rounded-md border border-secondary bg-secondary px-6 py-3 text-sm font-medium text-primary hover:bg-vista-blue-300 transition-colors">
+              <a href="#featured" class="inline-flex items-center justify-center gap-2 rounded-md border border-secondary bg-secondary px-6 py-3 text-sm font-medium text-primary hover:bg-vista-blue-300 transition-colors">
                 Explore Research
               </a>
             </div>
@@ -48,8 +48,8 @@
     <!-- End Hero Section -->
 
     <!-- Hero Featured Story -->
-    <section class="border-b border-slate-200/70 bg-paper">
-      <div class="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-10 md:grid-cols-12 md:gap-10 md:py-14">
+    <section id="featured" class="border-b border-slate-200/70 bg-paper">
+      <div class="mx-auto grid items-center max-w-6xl grid-cols-1 gap-6 px-4 py-10 md:grid-cols-12 md:gap-10 md:py-14">
         <div class="md:col-span-7">
           <div class="aspect-[16/10] overflow-hidden rounded bg-slate-100">
             <img src="https://images.unsplash.com/photo-1523246191914-9fdb7d0b42d4?q=80&w=1200&auto=format&fit=crop" alt="Featured" class="h-full w-full object-cover" />
@@ -74,62 +74,8 @@
       </div>
     </section>
 
-    <!-- Topics -->
-    <section class="mx-auto max-w-6xl px-4 py-10 md:py-14">
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <TopicBlock
-          title="Computer Science & Engineering"
-          viewAll="#/topics"
-          :showViewAll="false"
-          :articles="computerScienceArticles"
-        />
-        <TopicBlock
-          title="Business & Entrepreneurship"
-          viewAll="#/topics"
-          :showViewAll="false"
-          :articles="businessArticles"
-        />
-        <TopicBlock
-          title="Liberal Arts & Humanities"
-          viewAll="#/topics"
-          :showViewAll="false"
-          :articles="humanitiesArticles"
-        />
-        <TopicBlock
-          title="Student Research Spotlight"
-          viewAll="#/topics"
-          :showViewAll="false"
-          :articles="spotlightArticles"
-        />
-      </div>
-    </section>
-
     <!-- Magazine Subscription -->
     <NewsletterSignup />
-
-    <!-- Latest Articles -->
-    <section class="mx-auto max-w-6xl px-4 pb-12">
-      <h2 class="mb-6 font-serif text-2xl text-ink">Latest Research</h2>
-      <div v-if="loading" class="text-center py-8">
-        <p class="text-ink/60">Loading articles...</p>
-      </div>
-      <div v-else-if="apiError" class="text-center py-8">
-        <p class="text-red-600">{{ apiError }}</p>
-      </div>
-      <div v-else class="grid grid-cols-1 gap-8 md:grid-cols-2">
-        <ArticleCard
-          v-for="article in latestArticles"
-          :key="article.link"
-          :title="article.title"
-          :description="article.description"
-          :author="article.author"
-          :date="article.date"
-          :tag="article.tag"
-          :image="article.image"
-          :link="article.link"
-        />
-      </div>
-    </section>
   </main>
 </template>
 
@@ -140,28 +86,80 @@ import TopicBlock from '@/components/TopicBlock.vue'
 import NewsletterSignup from '@/components/NewsletterSignup.vue'
 import ArticleCard from '@/components/ArticleCard.vue'
 
-const { getArticles, loading, error } = useApi()
+// NOTE: keep the api composable so existing loading/error bindings still work in the template,
+// but DO NOT call the network methods here — we want a minimal change that avoids runtime API calls.
+const { /* getArticles, */ loading, error } = useApi()
 
-// Article data loaded from API
+// Article data (previously loaded from API)
 const articles = ref<Article[]>([])
 const featuredArticle = ref<Article | null>(null)
 const apiError = ref<string | null>(null)
 
-// Load articles on mount
+// On mount: do not call the remote API. Instead inject a local hardcoded featured article
 onMounted(async () => {
   try {
-    // Get all articles with author and tags populated
-    articles.value = await getArticles({ populate: true, limit: 20 })
-    
-    // Set featured article (first featured article or first article)
-    featuredArticle.value = articles.value.find(article => article.featured) || articles.value[0] || null
+    // Enable smooth scrolling for in-page anchors
+    if (typeof document !== 'undefined' && document.documentElement) {
+      document.documentElement.style.scrollBehavior = 'smooth'
+    }
+
+    // Keep latest articles empty (no runtime fetch)
+    articles.value = []
+
+    // Minimal hardcoded featured article for the Home featured section
+    featuredArticle.value = {
+      id: 0,
+      documentId: 'local-from-curiosity',
+      title: 'From Curiosity to Impact',
+      excerpt: 'How curiosity-driven student research at Ashesi translated into measurable community impact and policy change. Lessons for researchers and institutions.',
+      content: '',
+      slug: 'from-curiosity-to-impact',
+      category: 'engineering',
+      status: 'published',
+      featured: true,
+      readTime: 5,
+      publishedDate: '2025-12-03',
+      viewCount: 0,
+      collaborators: null,
+      fundingSource: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      publishedAt: new Date().toISOString(),
+      locale: 'en',
+      author: {
+        id: 0,
+        documentId: 'local-author',
+        firstName: 'Ashesi Research Club',
+        lastName: '',
+        email: 'info@ashesi.edu',
+        phone: '',
+        program: 'other',
+        yearOfStudy: 'faculty',
+        researchAdvisor: '',
+        bio: '',
+        researchInterests: '',
+        status: 'active',
+        achievements: '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
+        locale: 'en'
+      },
+      tags: [],
+      featuredImage: null,
+      seo: null,
+      pdfFile: null,
+      createdBy: null,
+      updatedBy: null,
+      localizations: []
+    } as Article
   } catch (err) {
-    apiError.value = err instanceof Error ? err.message : 'Failed to load articles'
-    console.error('Failed to load articles:', err)
+    apiError.value = err instanceof Error ? err.message : 'Failed to load featured article'
+    console.error('Failed to load featured article:', err)
   }
 })
 
-// Computed properties for different article categories
+// Computed properties for different article categories — keep logic as-is, they will operate on the (empty) articles array
 const computerScienceArticles = computed(() => {
   return articles.value
     .filter(article => article.category === 'computer-science' || article.category === 'engineering')
@@ -276,4 +274,11 @@ const featuredReadTime = computed(() => featuredArticle.value?.readTime || 0)
 const featuredSlug = computed(() => featuredArticle.value?.slug || '')
 </script>
 
-<style scoped></style>
+<style>
+/* Enable smooth anchor scrolling for the whole site (unscoped) */
+html { scroll-behavior: smooth; }
+</style>
+
+<style scoped>
+/* ...existing scoped styles (if any) ... */
+</style>

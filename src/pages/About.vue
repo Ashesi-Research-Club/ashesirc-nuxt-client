@@ -36,7 +36,7 @@
     </section>
 
     <!-- Impact Stats -->
-    <section class="py-16 bg-slate-50 border-y border-slate-200/70">
+    <!-- <section class="py-16 bg-slate-50 border-y border-slate-200/70">
       <div class="mx-auto max-w-6xl px-4">
         <h2 class="font-serif text-3xl text-center text-ink mb-12">Our Impact</h2>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -58,7 +58,7 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
 
     <!-- What We Do -->
     <section class="py-16 md:py-20">
@@ -240,24 +240,110 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useApi, type TeamMember } from '@/composables/useApi'
+import type { TeamMember } from '@/composables/useApi'
 
-const { getTeamMembers, loading, error } = useApi()
-
-// Team members data - now loaded from API
-const teamMembers = ref<TeamMember[]>([])
+// No API calls here — team members are hardcoded for the static main branch
+const loading = ref(false)
 const apiError = ref<string | null>(null)
 
-// Load team members on mount
-onMounted(async () => {
-  try {
-    teamMembers.value = await getTeamMembers()
-  } catch (err) {
-    apiError.value = err instanceof Error ? err.message : 'Failed to load team members'
-    // Fallback to empty array or show error message
-    console.error('Failed to load team members:', err)
-  }
-})
+const teamMembers = ref<TeamMember[]>([
+  {
+    id: 1,
+    name: 'Kelvin Ahiakpor',
+    role: 'President',
+    yearOfStudy: 'year-4',
+    description: 'Leads the club and coordinates research initiatives across departments.',
+    email: 'kelvin.ahiakpor@ashesi.edu',
+    isActive: true,
+    order: 1,
+    specialization: 'Research Leadership',
+    joinDate: '2024-08-01'
+  },
+  {
+    id: 2,
+    name: 'Maame Yaa Adjei-Mensah',
+    role: 'Vice President',
+    yearOfStudy: 'year-4',
+    description: 'Oversees publications and member outreach, and liaises with student groups.',
+    email: 'maame.adjei-mensah@ashesi.edu',
+    isActive: true,
+    order: 2,
+    specialization: 'Communications',
+    joinDate: '2024-08-01'
+  },
+  {
+    id: 3,
+    name: 'Breanna Paula Dawson',
+    role: 'Secretary',
+    yearOfStudy: 'year-2',
+    description: 'Manages editorial workflow and the quarterly magazine production.',
+    email: 'breanna.paula-dawson@ashesi.edu',
+    isActive: true,
+    order: 3,
+    specialization: 'Editorial',
+    joinDate: '2024-08-01'
+  },
+  {
+    id: 4,
+    name: 'Emmanuel Antwi-Buasiako',
+    role: 'Stakeholder Relations',
+    yearOfStudy: 'year-3',
+    description: 'Builds collaborations with stakeholders, sponsors and research partners.',
+    email: 'emmanuel.antwi-buasiako@ashesi.edu',
+    isActive: true,
+    order: 4,
+    specialization: 'Partnerships',
+    joinDate: '2024-08-01'
+  },
+    {
+    id: 5,
+    name: 'Edelin Poku',
+    role: 'Lead Editor',
+    yearOfStudy: 'year-3',
+    description: 'Oversees the editorial team and ensures high-quality publications.',
+    email: 'edelin.poku@ashesi.edu',
+    isActive: true,
+    order: 5,
+    specialization: 'Editorial',
+    joinDate: '2024-08-01'
+  },
+    {
+    id: 6,
+    name: 'Josephine Doamekpor',
+    role: 'Social Media & Outreach Lead',
+    yearOfStudy: 'year-3',
+    description: 'Manages social media presence and outreach initiatives to engage the Ashesi community.',
+    email: 'josephine.doamekpor@ashesi.edu',
+    isActive: true,
+    order: 6,
+    specialization: 'Partnerships',
+    joinDate: '2024-08-01'
+  },
+  {
+    id: 7,
+    name: 'Daniel Eta',
+    role: 'Web Development Lead',
+    yearOfStudy: 'year-2',
+    description: 'Leads the development and maintenance of the club website and digital platforms .',
+    email: 'daniel.eta@ashesi.edu',
+    isActive: true,
+    order: 7,
+    specialization: 'Web Development',
+    joinDate: '2024-08-01'
+  },
+    {
+    id: 8,
+    name: 'Marge Hagan',
+    role: 'Interviewers & Reporters Lead',
+    yearOfStudy: 'year-4',
+    description: 'Leads the team of interviewers and reporters to gather and produce high-quality content.',
+    email: 'marge.hagan@ashesi.edu',
+    isActive: true,
+    order: 8,
+    specialization: 'Content Creation',
+    joinDate: '2024-08-01'
+  },
+])
 
 // Carousel state
 const currentSlide = ref(0)

@@ -13,7 +13,6 @@
         <ul class="space-y-1 text-sm">
           <li><a class="hover:underline" href="/">Home</a></li>
           <li><a class="hover:underline" href="/apply">Apply</a></li>
-          <li><a class="hover:underline" href="/archives">Archives</a></li>
           <li><a class="hover:underline" href="/about">About</a></li>
           <li><a class="hover:underline" href="/join">Subscribe</a></li>
         </ul>

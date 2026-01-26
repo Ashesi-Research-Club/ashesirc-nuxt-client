@@ -51,7 +51,8 @@
       <div class="prose max-w-none">
         <p v-if="article.excerpt" class="lead">{{ article.excerpt }}</p>
         <template v-if="article.content && Array.isArray(article.content)">
-          <PortableText :value="article.content" />
+          <!-- <PortableText :value="article.content" /> -->
+          <PortableText :value="article.content" :components="portableComponents" />
         </template>
         <div v-else v-html="parsedContent"></div>
       </div>
@@ -96,6 +97,22 @@
 </template>
 
 <script setup lang="ts">
+import { h } from 'vue'
+import { urlFor } from '@/lib/sanity' // or the helper you have that builds Sanity image URLs
+
+const portableComponents = {
+  types: {
+    image: ({ value }: any) => {
+      // value typically has { asset, alt, caption } (adjust to your structure)
+      const src = urlFor(value).width(1200).url()
+      const alt = value.alt || value.caption || ''
+      return h('figure', { class: 'my-6' }, [
+        h('img', { src, alt, class: 'w-full object-cover rounded' }),
+        value.caption ? h('figcaption', { class: 'px-3 py-2 text-center text-xs text-ink/60' }, value.caption) : null
+      ])
+    }
+  }
+}
 import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { useApi } from '@/composables/useApi'
 import { useMarkdown } from '@/composables/useMarkdown'

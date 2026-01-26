@@ -41,12 +41,7 @@
         </p>
       </header>
 
-      <figure v-if="article.featuredImage" class="my-6 overflow-hidden rounded bg-slate-100">
-        <img :src="article.featuredImage.url" :alt="article.title" class="w-full object-cover" />
-        <figcaption v-if="article.featuredImage.caption" class="px-3 py-2 text-center text-xs text-ink/60">
-          {{ article.featuredImage.caption }}
-        </figcaption>
-      </figure>
+      <!-- Featured image removed from detail page. Images will be shown on listing/landing pages instead. -->
 
       <div class="prose max-w-none">
         <p v-if="article.excerpt" class="lead">{{ article.excerpt }}</p>
@@ -97,28 +92,13 @@
 </template>
 
 <script setup lang="ts">
-import { h } from 'vue'
-import { urlFor } from '@/lib/sanity' // or the helper you have that builds Sanity image URLs
-
-const portableComponents = {
-  types: {
-    image: ({ value }: any) => {
-      // value typically has { asset, alt, caption } (adjust to your structure)
-      const src = urlFor(value).width(1200).url()
-      const alt = value.alt || value.caption || ''
-      return h('figure', { class: 'my-6' }, [
-        h('img', { src, alt, class: 'w-full object-cover rounded' }),
-        value.caption ? h('figcaption', { class: 'px-3 py-2 text-center text-xs text-ink/60' }, value.caption) : null
-      ])
-    }
-  }
-}
-import { onMounted, onUnmounted, ref, computed } from 'vue'
+import { onMounted, onUnmounted, ref, computed, h } from 'vue'
 import { useApi } from '@/composables/useApi'
 import { useMarkdown } from '@/composables/useMarkdown'
 import type { Article } from '@/composables/useApi'
 import { appConfig } from '@/config/app'
 import { fetchBySlug, fetchArticlesList } from '@/lib/sanity'
+import { urlFor } from '@/lib/sanity'
 import { PortableText } from '@portabletext/vue'
 
 const { loading } = useApi()
@@ -170,13 +150,44 @@ const mapSanityDocToArticle = (doc: any): Article => {
       locale: doc.author.lang || 'en'
     } : null,
     tags: Array.isArray(doc.tags) ? doc.tags.map((t:any) => ({ id: t._id || t._ref || 0, documentId: t._id || t._ref || '', name: t.title || t.name || t.slug || '', slug: t.slug?.current || t.slug || '', color: t.color || '', description: t.description || '', createdAt: t._createdAt || new Date().toISOString(), updatedAt: t._updatedAt || new Date().toISOString(), publishedAt: t.publishedAt || new Date().toISOString(), locale: t.lang || 'en' })) : [],
-    featuredImage: doc.mainImage ? { url: doc.mainImage.asset?.url || '', caption: doc.mainImage.caption || '' } : null,
+    // Prefer explicit `featuredImage`, fall back to `mainImage` — use Sanity URL builder for optimized src
+    featuredImage: (() => {
+      const imgSource = doc.featuredImage || doc.mainImage
+      if (!imgSource) return null
+      try {
+        const src = urlFor(imgSource).width(1200).url()
+        return { url: src || (imgSource.asset?.url || ''), caption: imgSource.caption || imgSource.alt || '' }
+      } catch (e) {
+        return { url: imgSource.asset?.url || '', caption: imgSource.caption || '' }
+      }
+    })(),
     seo: doc.seo || null,
     pdfFile: doc.pdfFile || null,
     createdBy: doc.createdBy || null,
     updatedBy: doc.updatedBy || null,
     localizations: doc.localizations || []
   }
+}
+
+// Portable Text components: render Sanity image blocks using urlFor
+const portableComponents = {
+  types: {
+    image: ({ value }: { value: any }) => {
+      if (!value || !value.asset) return null
+      try {
+        const src = urlFor(value).width(1200).auto('format').url()
+        const alt = value.alt || value.caption || ''
+        return h('figure', { class: 'my-6' }, [
+          h('img', { src, alt, class: 'mx-auto rounded' }),
+          value.caption ? h('figcaption', { class: 'text-sm text-muted mt-2 text-center' }, value.caption) : null,
+        ])
+      } catch (e) {
+        // fallback simple img tag if builder fails
+        const src = value.asset?.url || ''
+        return h('img', { src, alt: value.caption || '', class: 'mx-auto rounded' })
+      }
+    },
+  },
 }
 
 // Get article slug from URL path

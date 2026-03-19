@@ -75,6 +75,7 @@ export interface TeamMember {
     order: number
     specialization: string
     joinDate: string
+    photo?: string
 }
 
 export interface ApiResponse<T> {

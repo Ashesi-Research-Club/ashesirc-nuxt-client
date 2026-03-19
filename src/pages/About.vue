@@ -140,10 +140,10 @@
                 <div class="bg-white rounded-xl border border-slate-200 overflow-hidden h-full">
                   <!-- Member Image -->
                   <div class="h-64 bg-gradient-to-br from-vista-blue-200 to-vista-blue-300 relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                    <div class="absolute bottom-4 left-4 text-white">
+                    <img v-if="member.photo" :src="member.photo" :alt="member.name" class="w-full h-full object-cover object-top" />
+                    <div v-else class="w-full h-full flex items-end justify-start p-4">
                       <div class="w-12 h-12 bg-white/20 backdrop-blur rounded-full flex items-center justify-center">
-                        <span class="text-lg font-bold">{{ member.name.split(' ').map(n => n[0]).join('') }}</span>
+                        <span class="text-lg font-bold text-white">{{ member.name.split(' ').map(n => n[0]).join('') }}</span>
                       </div>
                     </div>
                   </div>
@@ -187,7 +187,7 @@
           <button 
             v-if="!loading && !apiError"
             @click="nextSlide"
-            :disabled="currentSlide >= maxSlides"
+            :disabled="currentSlide >= teamMembers.length - slidesPerView"
             class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white border border-slate-200 rounded-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md transition-shadow"
           >
             <svg class="w-5 h-5 text-ink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -257,7 +257,8 @@ const teamMembers = ref<TeamMember[]>([
     isActive: true,
     order: 1,
     specialization: 'Research Leadership',
-    joinDate: '2024-08-01'
+    joinDate: '2024-08-01',
+    photo: '/team/kelvin.png' // Add your photo URL here
   },
   {
     id: 2,
@@ -269,7 +270,8 @@ const teamMembers = ref<TeamMember[]>([
     isActive: true,
     order: 2,
     specialization: 'Communications',
-    joinDate: '2024-08-01'
+    joinDate: '2024-08-01',
+    photo: '/team/maame.jpeg'
   },
   {
     id: 3,
@@ -281,7 +283,8 @@ const teamMembers = ref<TeamMember[]>([
     isActive: true,
     order: 3,
     specialization: 'Editorial',
-    joinDate: '2024-08-01'
+    joinDate: '2024-08-01',
+    photo: '/team/breanna.jpeg'
   },
   {
     id: 4,
@@ -293,19 +296,21 @@ const teamMembers = ref<TeamMember[]>([
     isActive: true,
     order: 4,
     specialization: 'Partnerships',
-    joinDate: '2024-08-01'
+    joinDate: '2024-08-01',
+    photo: ''
   },
     {
     id: 5,
-    name: 'Edelin Poku',
+    name: 'Sinam Ametewee',
     role: 'Lead Editor',
     yearOfStudy: 'year-3',
     description: 'Oversees the editorial team and ensures high-quality publications.',
-    email: 'edelin.poku@ashesi.edu',
+    email: 'sinam.ametewee@ashesi.edu.gh',
     isActive: true,
     order: 5,
     specialization: 'Editorial',
-    joinDate: '2024-08-01'
+    joinDate: '2024-08-01',
+    photo: '/team/sinam.png'
   },
     {
     id: 6,
@@ -317,7 +322,8 @@ const teamMembers = ref<TeamMember[]>([
     isActive: true,
     order: 6,
     specialization: 'Partnerships',
-    joinDate: '2024-08-01'
+    joinDate: '2024-08-01',
+    photo: '/team/kekeli.jpeg'
   },
   {
     id: 7,
@@ -329,7 +335,8 @@ const teamMembers = ref<TeamMember[]>([
     isActive: true,
     order: 7,
     specialization: 'Web Development',
-    joinDate: '2024-08-01'
+    joinDate: '2024-08-01',
+    photo: '/team/danieleta.jpeg'
   },
     {
     id: 8,
@@ -341,7 +348,8 @@ const teamMembers = ref<TeamMember[]>([
     isActive: true,
     order: 8,
     specialization: 'Content Creation',
-    joinDate: '2024-08-01'
+    joinDate: '2024-08-01',
+    photo: ''
   },
 ])
 
@@ -353,9 +361,10 @@ const slidesPerView = ref(3)
 const totalSlides = computed(() => Math.ceil(teamMembers.value.length / slidesPerView.value))
 const maxSlides = computed(() => totalSlides.value - 1)
 
-// Carousel navigation
+// Carousel navigation - shift by 1 item at a time (sliding window)
 const nextSlide = () => {
-  if (currentSlide.value < maxSlides.value) {
+  // Can advance if there are more items to show
+  if (currentSlide.value < teamMembers.value.length - slidesPerView.value) {
     currentSlide.value++
   }
 }
@@ -384,7 +393,7 @@ let autoAdvanceInterval: number
 
 const startAutoAdvance = () => {
   autoAdvanceInterval = setInterval(() => {
-    if (currentSlide.value >= maxSlides.value) {
+    if (currentSlide.value >= teamMembers.value.length - slidesPerView.value) {
       currentSlide.value = 0
     } else {
       nextSlide()

@@ -349,7 +349,7 @@ const teamMembers = ref<TeamMember[]>([
     order: 8,
     specialization: 'Content Creation',
     joinDate: '2024-08-01',
-    photo: ''
+    photo: '/team/marge.png'
   },
 ])
 

@@ -269,7 +269,7 @@ const teamMembers = ref<TeamMember[]>([
     email: 'maame.adjei-mensah@ashesi.edu',
     isActive: true,
     order: 2,
-    specialization: 'Communications',
+    specialization: 'Creative Direction',
     joinDate: '2024-08-01',
     photo: '/team/maame.jpeg'
   },
@@ -282,7 +282,7 @@ const teamMembers = ref<TeamMember[]>([
     email: 'breanna.paula-dawson@ashesi.edu',
     isActive: true,
     order: 3,
-    specialization: 'Editorial',
+    specialization: 'Communications',
     joinDate: '2024-08-01',
     photo: '/team/breanna.jpeg'
   },
@@ -297,7 +297,7 @@ const teamMembers = ref<TeamMember[]>([
     order: 4,
     specialization: 'Partnerships',
     joinDate: '2024-08-01',
-    photo: ''
+    photo: '/team/emmanuel.jpeg'
   },
     {
     id: 5,

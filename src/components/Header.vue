@@ -2,7 +2,7 @@
   <header class="sticky top-0 z-40 border-b border-slate-200/60 bg-paper/80 backdrop-blur supports-[backdrop-filter]:bg-paper/60">
     <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:py-4">
       <a href="/" class="flex items-center gap-3">
-        <div class="h-8 w-8 rounded-sm bg-primary text-white grid place-items-center font-serif text-lg font-semibold">AR</div>
+        <img src="/aurc-logo.png" alt="Ashesi Research Club" class="h-8 w-8 rounded-sm object-cover" />
         <span class="sr-only">Ashesi Research Magazine</span>
         <span class="text-[1.4rem] font-serif tracking-tight text-ink">Ashesi Research Magazine</span>
       </a>

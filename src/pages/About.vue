@@ -258,7 +258,7 @@ const teamMembers = ref<TeamMember[]>([
     order: 1,
     specialization: 'Research Leadership',
     joinDate: '2024-08-01',
-    photo: '/team/kelvin.png' // Add your photo URL here
+    photo: '/team/kelvin.webp' // Add your photo URL here
   },
   {
     id: 2,
@@ -271,7 +271,7 @@ const teamMembers = ref<TeamMember[]>([
     order: 2,
     specialization: 'Creative Direction',
     joinDate: '2024-08-01',
-    photo: '/team/maame.jpeg'
+    photo: '/team/maame.webp'
   },
   {
     id: 3,
@@ -284,7 +284,7 @@ const teamMembers = ref<TeamMember[]>([
     order: 3,
     specialization: 'Communications',
     joinDate: '2024-08-01',
-    photo: '/team/breanna.jpeg'
+    photo: '/team/breanna.webp'
   },
   {
     id: 4,
@@ -297,7 +297,7 @@ const teamMembers = ref<TeamMember[]>([
     order: 4,
     specialization: 'Partnerships',
     joinDate: '2024-08-01',
-    photo: '/team/emmanuel.jpeg'
+    photo: '/team/emmanuel.webp'
   },
     {
     id: 5,
@@ -310,7 +310,7 @@ const teamMembers = ref<TeamMember[]>([
     order: 5,
     specialization: 'Editorial',
     joinDate: '2024-08-01',
-    photo: '/team/sinam.png'
+    photo: '/team/sinam.webp'
   },
     {
     id: 6,
@@ -323,7 +323,7 @@ const teamMembers = ref<TeamMember[]>([
     order: 6,
     specialization: 'Partnerships',
     joinDate: '2024-08-01',
-    photo: '/team/kekeli.jpeg'
+    photo: '/team/kekeli.webp'
   },
   {
     id: 7,
@@ -336,7 +336,7 @@ const teamMembers = ref<TeamMember[]>([
     order: 7,
     specialization: 'Web Development',
     joinDate: '2024-08-01',
-    photo: '/team/danieleta.jpeg'
+    photo: '/team/danieleta.webp'
   },
     {
     id: 8,
@@ -349,7 +349,7 @@ const teamMembers = ref<TeamMember[]>([
     order: 8,
     specialization: 'Content Creation',
     joinDate: '2024-08-01',
-    photo: '/team/marge.png'
+    photo: '/team/marge.webp'
   },
 ])
 
